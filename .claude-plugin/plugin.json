@@ -1,6 +1,6 @@
 {
   "name": "claude-monitor-and-alerts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Keeps you in the loop while Claude Code works: beeps when Claude finishes, asks a question or needs permission, a usage status line (5-hour and weekly limits), and an optional always-on-top window that tracks every running session. Windows, WSL and macOS for the window; the beeps and status line also run on Linux.",
   "author": {
     "name": "claude-monitor-and-alerts contributors"

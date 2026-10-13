@@ -118,7 +118,8 @@ While a session has subagents running, the window shows one indented child row p
 it (`└ Review the auth module  1m`), with what the subagent is doing (the description given when it
 was launched, or its type when none is available yet) and how long it has been running. A
 description wider than the row scrolls sideways. The rows disappear when the
-subagent finishes, and a subagent whose stop event was missed is dropped after 2 hours. A
+subagent finishes. A subagent stopped before finishing (with `TaskStop` or from the UI) fires no
+stop event: its row goes away on the session's next event, and any other missed one after 2 hours. A
 subagent finishing does not mark its parent session as finished.
 If the main agent finishes its turn while subagents are still running (for example in the
 background), the session keeps showing as **working** (green) and only turns to finished when the

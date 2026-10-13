@@ -311,6 +311,25 @@ function describeLater(sessionId, agentId, transcript) {
 }
 const SUBAGENT_TTL_SEC = 2 * 3600;
 const SUBAGENT_MAX = 12;
+/**
+ * A subagent stopped from outside (TaskStop, or killed in the UI) fires no SubagentStop: its own
+ * transcript then ends with the "[Request interrupted" user line.
+ */
+function subagentInterrupted(transcript, sessionId, agentId) {
+    try {
+        if (typeof transcript !== "string" || !insideProjects(transcript))
+            return false;
+        const own = path.join(path.dirname(transcript), sessionId, "subagents", `agent-${agentId}.jsonl`);
+        if (!insideProjects(own))
+            return false;
+        const lines = readSlice(own, true, 16 * 1024).trim().split("\n");
+        const last = JSON.parse(lines[lines.length - 1]);
+        return last.type === "user" && textOf(last.message?.content).startsWith("[Request interrupted");
+    }
+    catch {
+        return false;
+    }
+}
 function pruneSubagents(list, now) {
     if (!Array.isArray(list))
         return [];
@@ -368,7 +387,7 @@ function writeSession(file, session) {
     fs.renameSync(temp, file);
 }
 function main() {
-    const event = process.argv[2] || "waiting";
+    let event = process.argv[2] || "waiting";
     if (event === "subagent-describe") {
         describeLater(process.argv[3], process.argv[4], process.argv[5]);
         return;
@@ -382,6 +401,11 @@ function main() {
     // fires on the approval itself, and the window cannot read WSL transcripts to notice it.
     if (event === "resume" && data.agent_id)
         return;
+    // the main agent stopped a background subagent: no SubagentStop follows, so end its row here
+    if (event === "resume" && data.tool_name === "TaskStop" && typeof data.tool_input?.task_id === "string") {
+        event = "subagent-stop";
+        data.agent_id = data.tool_input.task_id;
+    }
     const sessionId = data.session_id;  // no id, no session: nothing is written
     // the id becomes a file name: reject anything that could leave SESS_DIR
     if (typeof sessionId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(sessionId))
@@ -446,7 +470,8 @@ function main() {
         // Set by the hook because the window cannot read WSL transcripts to find the box itself.
         if (event === "notification" && previous.state === "question")
             state = "question";
-        const activeSubagents = pruneSubagents(previous.subagents, now);
+        const activeSubagents = pruneSubagents(previous.subagents, now)
+            .filter((a) => !subagentInterrupted(data.transcript_path, sessionId, a.id));
         // Stop (or the idle notice) while subagents are still running, e.g. in the background: the
         // session keeps showing as working until the last subagent stops (see subagent-stop above).
         const deferStop = state === "waiting" && activeSubagents.length > 0;
