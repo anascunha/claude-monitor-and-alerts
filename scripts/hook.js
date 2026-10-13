@@ -378,6 +378,10 @@ function main() {
     // carries "agent_id" (same rule as play_beep.sh). Permission/question notifications still count.
     if ((event === "waiting" || event === "question") && data.agent_id)
         return;
+    // PostToolUse: a tool ran, so an approved permission or an answered question is over. No hook
+    // fires on the approval itself, and the window cannot read WSL transcripts to notice it.
+    if (event === "resume" && data.agent_id)
+        return;
     const sessionId = data.session_id;  // no id, no session: nothing is written
     // the id becomes a file name: reject anything that could leave SESS_DIR
     if (typeof sessionId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(sessionId))
@@ -435,7 +439,9 @@ function main() {
             writeSession(file, session);
             return;
         }
-        let state = event === "notification" ? notificationState(data) : event;
+        if (event === "resume" && previous.state !== "permission" && previous.state !== "question")
+            return;  // already working: runs after every tool, so leave the file alone
+        let state = event === "notification" ? notificationState(data) : event === "resume" ? "working" : event;
         // AskUserQuestion box open (PreToolUse): the late idle/elicitation notice keeps it a question.
         // Set by the hook because the window cannot read WSL transcripts to find the box itself.
         if (event === "notification" && previous.state === "question")

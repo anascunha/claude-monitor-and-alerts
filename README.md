@@ -22,7 +22,7 @@ The plugin ships no agents or skills. It registers hooks and one command:
 | `Stop`             | (all)               | `play_beep.sh`        | Claude finished its turn and is waiting for input |
 | `PreToolUse`       | `AskUserQuestion`   | `play_beep.sh`        | Claude is about to ask you a question             |
 | `PreToolUse`       | `AskUserQuestion`   | `hook.js question`    | The question box opened (blue in the window)      |
-| `PostToolUse`      | `AskUserQuestion`   | `hook.js working`     | You answered the question                         |
+| `PostToolUse`      | (all)               | `hook.js resume`      | A tool ran: back to working after a permission or question |
 | `Notification`     | `permission_prompt` | `play_beep.sh`        | Claude needs permission to run a tool             |
 | `SessionStart`     | (all)               | `setup_statusline.sh` | A session starts, resumes, or is cleared          |
 | `UserPromptSubmit` | (all)               | `hook.js working`     | You sent a prompt                                 |

@@ -63,11 +63,10 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "AskUserQuestion",
         "hooks": [
           {
             "type": "command",
-            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" working || true",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" resume || true",
             "timeout": 10
           }
         ]
