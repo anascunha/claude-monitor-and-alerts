@@ -1,5 +1,8 @@
 # claude-monitor-and-alerts
 
+<p align="center">
+  <img src="demo.gif" alt="Claude Monitor in action" width="420">
+</p>
 ![Claude Monitor in action](demo.gif)
 
 Keeps you in the loop while Claude Code works, so you can leave sessions running and switch to
