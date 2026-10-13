@@ -10,7 +10,8 @@ ring_bell() {
 # Hook events fire for subagent turns too, but only the main agent marks the end of the
 # execution. Subagent hook input carries "agent_id"; quotes inside JSON string values are
 # escaped, so an unescaped key match is a real key. Skipped when stdin is a terminal (manual run).
-if [ ! -t 0 ] && grep -qE '(^|[^\\])"agent_id"[[:space:]]*:'; then
+# A permission request ("permission" argument) beeps for subagents too: it is waiting for you.
+if [ "$1" != permission ] && [ ! -t 0 ] && grep -qE '(^|[^\\])"agent_id"[[:space:]]*:'; then
     exit 0
 fi
 

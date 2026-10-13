@@ -399,8 +399,8 @@ function main() {
         return;
     // PostToolUse: a tool ran, so an approved permission or an answered question is over. No hook
     // fires on the approval itself, and the window cannot read WSL transcripts to notice it.
-    if (event === "resume" && data.agent_id)
-        return;
+    // A subagent's tool only ends a permission (a question box is always the main agent's).
+    const fromSubagent = !!data.agent_id;
     // the main agent stopped a background subagent: no SubagentStop follows, so end its row here
     if (event === "resume" && data.tool_name === "TaskStop" && typeof data.tool_input?.task_id === "string") {
         event = "subagent-stop";
@@ -455,7 +455,8 @@ function main() {
             const session = { ...previous, subagents: others };
             // The main agent already finished its turn (Stop) while subagents were still running: the
             // session only counts as finished once the last one ends.
-            if (event === "subagent-stop" && !others.length && previous.deferredStop && previous.state === "working") {
+            // A pending permission of the subagent that just ended is over too.
+            if (event === "subagent-stop" && !others.length && previous.deferredStop && (previous.state === "working" || previous.state === "permission")) {
                 session.state = "waiting";
                 session.since = now;
                 session.deferredStop = false;
@@ -463,8 +464,10 @@ function main() {
             writeSession(file, session);
             return;
         }
-        if (event === "resume" && previous.state !== "permission" && previous.state !== "question")
+        if (event === "resume" && previous.state !== "permission" && (fromSubagent || previous.state !== "question"))
             return;  // already working: runs after every tool, so leave the file alone
+        // PermissionRequest fires when the approval box opens, also for background subagents, which
+        // send no permission_prompt notification
         let state = event === "notification" ? notificationState(data) : event === "resume" ? "working" : event;
         // AskUserQuestion box open (PreToolUse): the late idle/elicitation notice keeps it a question.
         // Set by the hook because the window cannot read WSL transcripts to find the box itself.
@@ -499,8 +502,9 @@ function main() {
             entrypoint: process.env.CLAUDE_CODE_ENTRYPOINT || previous.entrypoint || null,
             transcript,
             subagents: activeSubagents,
-            // set while a Stop is held back; a notification keeps it, anything else (a new prompt, a real Stop) clears it
-            deferredStop: deferStop || (event === "notification" && !!previous.deferredStop),
+            // set while a Stop is held back; a notification, permission or resume keeps it, anything else
+            // (a new prompt, a real Stop) clears it
+            deferredStop: deferStop || (["notification", "permission", "resume"].includes(event) && !!previous.deferredStop),
         });
     });
 }

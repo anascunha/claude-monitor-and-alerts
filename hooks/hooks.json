@@ -25,20 +25,26 @@
     ],
     "Notification": [
       {
-        "matcher": "permission_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/scripts/play_beep.sh",
-            "timeout": 10
-          }
-        ]
-      },
-      {
         "hooks": [
           {
             "type": "command",
             "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" notification || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/scripts/play_beep.sh permission",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" permission || true",
             "timeout": 10
           }
         ]
