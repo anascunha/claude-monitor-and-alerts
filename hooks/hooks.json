@@ -1,0 +1,109 @@
+{
+  "description": "Beeps when Claude finishes, asks a question or needs permission; a one-time usage status line setup; and the session and subagent state files read by the monitor window",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/scripts/setup_statusline.sh \"${CLAUDE_PLUGIN_ROOT}\" \"${CLAUDE_PLUGIN_DATA}\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" working || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/scripts/play_beep.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" notification || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/scripts/play_beep.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/scripts/play_beep.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" waiting || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" end || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" subagent-start || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" subagent-stop || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

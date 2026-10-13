@@ -1,0 +1,16 @@
+{
+  "name": "claude-monitor-and-alerts",
+  "owner": {
+    "name": "claude-monitor-and-alerts contributors"
+  },
+  "metadata": {
+    "description": "Claude Code session monitor window, usage status line and sound alerts."
+  },
+  "plugins": [
+    {
+      "name": "claude-monitor-and-alerts",
+      "source": "./",
+      "description": "Beeps when Claude finishes or needs you, a usage status line and an always-on-top window that tracks every running session."
+    }
+  ]
+}
