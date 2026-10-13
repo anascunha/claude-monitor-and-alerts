@@ -265,6 +265,7 @@ func situacao(_ s: Sessao) -> String {
     if estado == "permission", let m = dataDoArquivo(s.transcript), m.timeIntervalSince1970 > s.since + 2 {
         estado = "working"
     }
+    if estado == "question" { return "question" }  // AskUserQuestion box open, set by the hook
     let pedido = ultimoPedido(s.transcript)
     if estado == "working" || estado == "permission" { return pedido == "caixa" ? "question" : estado }
     return pedido != nil ? "question" : "finished"

@@ -376,7 +376,7 @@ function main() {
     const data = readStdin();
     // A subagent finishing its turn must not mark the whole session as finished: its hook input
     // carries "agent_id" (same rule as play_beep.sh). Permission/question notifications still count.
-    if (event === "waiting" && data.agent_id)
+    if ((event === "waiting" || event === "question") && data.agent_id)
         return;
     const sessionId = data.session_id;  // no id, no session: nothing is written
     // the id becomes a file name: reject anything that could leave SESS_DIR
@@ -436,6 +436,10 @@ function main() {
             return;
         }
         let state = event === "notification" ? notificationState(data) : event;
+        // AskUserQuestion box open (PreToolUse): the late idle/elicitation notice keeps it a question.
+        // Set by the hook because the window cannot read WSL transcripts to find the box itself.
+        if (event === "notification" && previous.state === "question")
+            state = "question";
         const activeSubagents = pruneSubagents(previous.subagents, now);
         // Stop (or the idle notice) while subagents are still running, e.g. in the background: the
         // session keeps showing as working until the last subagent stops (see subagent-stop above).

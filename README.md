@@ -21,6 +21,8 @@ The plugin ships no agents or skills. It registers hooks and one command:
 | ------------------ | ------------------- | --------------------- | ------------------------------------------------- |
 | `Stop`             | (all)               | `play_beep.sh`        | Claude finished its turn and is waiting for input |
 | `PreToolUse`       | `AskUserQuestion`   | `play_beep.sh`        | Claude is about to ask you a question             |
+| `PreToolUse`       | `AskUserQuestion`   | `hook.js question`    | The question box opened (blue in the window)      |
+| `PostToolUse`      | `AskUserQuestion`   | `hook.js working`     | You answered the question                         |
 | `Notification`     | `permission_prompt` | `play_beep.sh`        | Claude needs permission to run a tool             |
 | `SessionStart`     | (all)               | `setup_statusline.sh` | A session starts, resumes, or is cleared          |
 | `UserPromptSubmit` | (all)               | `hook.js working`     | You sent a prompt                                 |
@@ -160,7 +162,8 @@ again after adding them.
 `.claude-monitor` and starts the window on Windows (profile names with spaces or non-ASCII
 characters are rejected). Sessions started inside WSL are written to that same folder, without a
 pid, so the window keeps them for up to 6 hours unless `SessionEnd` removes them first.
-Transcript-based details (renamed titles, "asked a question") are not available for them.
+Transcript-based details (renamed titles, a reply that ends in a question) are not available for
+them; the question box still turns the dot blue, because the hook marks it.
 
 ## Requirements
 

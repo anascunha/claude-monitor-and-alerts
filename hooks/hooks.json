@@ -1,5 +1,5 @@
 {
-  "description": "Beeps when Claude finishes, asks a question or needs permission; a one-time usage status line setup; and the session and subagent state files read by the monitor window",
+  "description": "Beeps when Claude finishes, asks a question or needs permission; a one-time usage status line setup; and the session, question and subagent state files read by the monitor window",
   "hooks": {
     "SessionStart": [
       {
@@ -51,6 +51,23 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/scripts/play_beep.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" question || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v node > /dev/null 2>&1 && node \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.js\" working || true",
             "timeout": 10
           }
         ]
