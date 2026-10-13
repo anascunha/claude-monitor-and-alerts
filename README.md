@@ -268,17 +268,4 @@ the dots change as described above.
 
 ## Open items
 
-- **macOS is untested.** `overlay.swift` was edited without a Mac and has never been compiled or
-  run. Run `swiftc -swift-version 5 -parse scripts/overlay/overlay.swift` on a Mac before merging.
-- **Design.** The pickaxe, sword, diamond and stone drawn during the mascot's idle scenes are
-  Minecraft-style drawings made in the script (no Mojang assets); decide whether to keep them.
-- The Clawd mascot is the Claude Code mascot (an Anthropic character); check that using it in your
-  context is fine.
-- **Session links** use the `vscode://local.claude-monitor` scheme of the original extension, which
-  is not part of this plugin, so clicking a session only brings the editor to the front.
-- Native Linux has no monitor window.
-- **Subagent rows and removing a session on macOS:** the Swift parts (child rows, collapse chevron,
-  scrolling description, Show subagents, Remove session) were written without a Mac and have not been
-  compiled.
-- **Claude desktop app:** works for Code sessions on WSL projects; native Windows folders and the
-  Mac app are not confirmed (and the hook shell on Windows is undocumented); see [Claude desktop app](#claude-desktop-app-code-tab-experimental).
+Known issues and ideas are tracked in the [Issues](../../issues) tab.
